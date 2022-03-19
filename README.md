@@ -12,18 +12,15 @@ ImConfigManger is a simple lightweight config editor designed for BepInEx config
 - Multiple styles
 - Custom style editor
 
+## Installation
+
+Download the latest release and unzip the zip then run ImConfig.exe
 
 ## Screenshots
 
 ![App Screenshot](https://github.com/viwas45hu978ot/ImConfigManager/raw/main/pic1.png)
 ![App Screenshot](https://github.com/viwas45hu978ot/ImConfigManager/raw/main/pic2.png)
 ![App Screenshot](https://github.com/viwas45hu978ot/ImConfigManager/raw/main/pic3.png)
-
-
-## Installation
-
-Download the latest release and unzip the zip then run ImConfig.exe
-
     
 ## Style Editor
 The style editor works by modifying the style.toml file
