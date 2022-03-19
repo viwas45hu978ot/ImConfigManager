@@ -2,6 +2,7 @@
 # ImConfigManager
 
 ImConfigManger is a simple lightweight config editor designed for BepInEx configs
+
 Heavily inspired by JJoe's config manager
 
 ## Features
