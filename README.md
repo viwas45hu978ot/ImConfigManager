@@ -5,7 +5,6 @@ ImConfigManger is a simple lightweight config editor designed for BepInEx config
 
 If you find a bug or have a good idea to something that could be added post an issue or write to me on discord `viwas45hu978ot#5747`
 
-Heavily inspired by JJoe's config manager
 
 ## Features
 
