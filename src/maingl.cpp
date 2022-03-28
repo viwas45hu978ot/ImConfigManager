@@ -7,6 +7,7 @@ All rights reserved.
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl2.h"
 
+//#include <windows.h>
 #include <stdio.h>
 #include <tchar.h>
 #include <iostream>
@@ -18,15 +19,23 @@ All rights reserved.
 #define GL_SILENCE_DEPRECATION
 #endif
 #include "GLFW/glfw3.h"
+#include "discord/discord.h"
 
 
 //cfg
 static char path[300] = "";
-static char edit[32000] = "";
+static char edit[320000] = "";
 static char editstyle[16000] = "";
 static char credit[128] = "ImConfigManager made by viwas45hu978ot";
 std::string multiline;
 std::string multilinestyle;
+
+struct DiscordState {
+    discord::User currentUser;
+
+    std::unique_ptr<discord::Core> core;
+};
+
 
 // [Win32] Our example includes a copy of glfw3.lib pre-compiled with VS2010 to maximize ease of testing and compatibility with old VS compilers.
 // To link with VS2010-era libraries, VS2015+ requires linking with legacy_stdio_definitions.lib, which we do using this pragma.
@@ -79,11 +88,26 @@ bool LoadTextureFromFile(const char* filename, GLuint* out_texture, int* out_wid
 #pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
 int main(int, char**)
 {
+    //discord
+    DiscordState state{};
+
+    discord::Core* core{};
+    auto result = discord::Core::Create(955129964850737193, DiscordCreateFlags_NoRequireDiscord, &core);
+    state.core.reset(core);
+    if (!state.core) {
+        std::cout << "Failed to instantiate discord core! (err " << static_cast<int>(result)
+            << ")\n";
+        std::exit(-1);
+    }
+
+
+
     // Setup window
     glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit())
         return 1;
     glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
+    
 
     GLFWwindow* window = glfwCreateWindow(1280, 720, "ImConfigManager", NULL, NULL);
     if (window == NULL)
@@ -126,12 +150,28 @@ int main(int, char**)
         std::istreambuf_iterator<char>());
     strcpy_s(editstyle, str.c_str());
 
+    //discord
+    discord::Activity activity{};
+    activity.SetApplicationId(955129964850737193);
+    activity.SetDetails("Editing Configs");
+    activity.SetState("https://github.com/viwas45hu978ot/ImConfigManager");
+    activity.SetType(discord::ActivityType::Playing);
+    state.core->ActivityManager().UpdateActivity(activity, [](discord::Result result) {
+        std::cout << ((result == discord::Result::Ok) ? "Succeeded" : "Failed")
+            << " updating activity!\n";
+        });
+    
+    state.core->ActivityManager().UpdateActivity(activity, [](discord::Result result) {
+        std::cout << ((result == discord::Result::Ok) ? "Succeeded" : "Failed")
+            << " updating activity!\n";
+        });
 
 
 
     // Main loop
     while (!glfwWindowShouldClose(window))
     {
+        
         // Poll and handle events (inputs, window resize, etc.)
         // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
         // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application, or clear/overwrite your copy of the mouse data.
@@ -144,22 +184,23 @@ int main(int, char**)
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
+
         //imgui
 
-
+        
 
                   //ImGui::SetNextWindowSize(ImVec2(900, 600));
         ImGui::SetNextWindowSize(ImVec2(io.DisplaySize.x, io.DisplaySize.y));
         ImGui::SetNextWindowPos(ImVec2(0, 0));
         ImGui::Begin("Hello, world!", &show_demo_window, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBringToFrontOnFocus);
-
+        
         //ImGui::StyleLoader::LoadFile("style.toml");
         //my stuff
-
+        state.core->RunCallbacks();
 
 
         if (ImGui::Button("Browse"))
-            ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".cfg,.txt", ".");
+            ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".cfg,.txt,.conf", ".");
 
         // display
         if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey"))
