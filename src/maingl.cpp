@@ -107,18 +107,20 @@ int main(int, char**)
     if (!glfwInit())
         return 1;
     glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
-    
+    glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
 
-    GLFWwindow* window = glfwCreateWindow(1280, 720, "ImConfigManager", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(10, 10, "ImConfigManager", NULL, NULL);
     if (window == NULL)
         return 1;
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1); // Enable vsync
 
+
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
+    ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
     //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
@@ -187,12 +189,15 @@ int main(int, char**)
 
         //imgui
 
-        
+
 
                   //ImGui::SetNextWindowSize(ImVec2(900, 600));
-        ImGui::SetNextWindowSize(ImVec2(io.DisplaySize.x, io.DisplaySize.y));
-        ImGui::SetNextWindowPos(ImVec2(0, 0));
-        ImGui::Begin("Hello, world!", &show_demo_window, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBringToFrontOnFocus);
+       // ImGui::SetNextWindowSize(ImVec2(io.DisplaySize.x, io.DisplaySize.y));
+        //ImGui::SetNextWindowPos(ImVec2(0, 0));
+        //ImGui::Begin("Hello, world!", &show_demo_window, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBringToFrontOnFocus);
+
+                      ImGui::Begin("ImConfig", &settings::main, ImGuiWindowFlags_NoBringToFrontOnFocus);
+                  
         
         //ImGui::StyleLoader::LoadFile("style.toml");
         //my stuff
@@ -320,12 +325,22 @@ int main(int, char**)
 
 
 
-
+        //close
+        if (settings::main == false)
+        {
+            return 0;
+        }
 
 
 
         // Rendering
         ImGui::Render();
+        // Update and Render additional Platform Windows
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+        }
         int display_w, display_h;
         glfwGetFramebufferSize(window, &display_w, &display_h);
         glViewport(0, 0, display_w, display_h);

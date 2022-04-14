@@ -10,6 +10,7 @@ namespace settings
     inline std::string color = "Dark";
     inline bool about = true;
     inline bool style = false;
+    inline bool main = true;
 
     
     
