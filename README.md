@@ -13,6 +13,7 @@ If you find a bug or have a good idea to something that could be added post an i
 - Low memory usage
 - Multiple styles
 - Custom style editor
+- Floating windows
 
 ## Installation
 
